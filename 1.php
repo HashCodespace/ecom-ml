@@ -63,7 +63,7 @@
         const formData = new FormData();
         formData.append('audio', blob, `${Date.now()}recording.wav`);
 
-        fetch('save.php', {
+        fetch('media-handler.php', {
           method: 'POST',
           body: formData
         })
