@@ -54,6 +54,47 @@ if ($result->num_rows > 0) {
                   <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-100"></div>
                 </div>
 <?php
+        }elseif ($user_id == 0) {
+          ?>
+          <div class="flex w-full mt-2 space-x-3 max-w-xs">
+        <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-100"></div>
+        <div>
+          <div class="bg-gray-100 p-3 rounded-t-lg ">
+            <p class="text-sm flex">Great! We have successfully found relevant results based on your voice command.</p>
+          </div>
+          
+            
+
+              <?php 
+
+                        if ($message_type == 'u') {
+                          echo '
+                          <a href="'.$message_text.'" target="_blank">
+                          <div class="bg-gray-200 text-gray-900 p-3  rounded-b-lg hover:bg-gray-900 hover:text-white">
+                          <p class="text-sm flex">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                            </svg>
+
+                             &nbsp; Open Search Result
+                             </p>
+                              </div>
+                             </a>
+                          ';
+                        } else {
+                          echo $message_text;
+                        }
+                        
+
+
+
+                    ?>
+         
+          <span class="text-xs text-gray-500 leading-none"><?php echo $sent_at;   ?></span>
+        </div>
+      </div>
+<?php
         }
 
     }

@@ -1,19 +1,43 @@
 <?php
 require_once 'header.php';
+$url = 'http';
+if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+    $url .= 's';
+}
+$url .= '://' . $_SERVER['SERVER_NAME'];
+if ($_SERVER['SERVER_PORT'] !== '80') {
+    $url .= ':' . $_SERVER['SERVER_PORT'];
+}
+$url .= $_SERVER['REQUEST_URI'];
 
 
+// SQL query to select data
+$sql = "SELECT DISTINCT name,img, price FROM product;";
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['keywords'])) {
+  // Extract keywords from the URL
+  $keywordArray = [];
+  parse_str(parse_url($url, PHP_URL_QUERY), $params);
+  if (isset($params['keywords'])) {
+      $keywordArray = $params['keywords'];
+  }
+
+  // Create SQL query
+  $sql = "SELECT DISTINCT name, img, price FROM product WHERE keyword IN ('" . implode("', '", $keywordArray) . "');";
+
+} 
 ?>
 
   <div class="bg-gray-50">
   <div>
     <!--
-      Mobile menu
+      Mobile PCu
 
-      Off-canvas menu for mobile, show/hide based on off-canvas menu state.
+      Off-canvas PCu for mobile, show/hide based on off-canvas PCu state.
     -->
     <div class="relative z-40 lg:hidden" role="dialog" aria-modal="true">
       <!--
-        Off-canvas menu backdrop, show/hide based on off-canvas menu state.
+        Off-canvas PCu backdrop, show/hide based on off-canvas PCu state.
 
         Entering: "transition-opacity ease-linear duration-300"
           From: "opacity-0"
@@ -22,281 +46,7 @@ require_once 'header.php';
           From: "opacity-100"
           To: "opacity-0"
       -->
-      <div class="fixed inset-0 bg-black bg-opacity-25"></div>
 
-      <div class="fixed inset-0 z-40 flex">
-        <!--
-          Off-canvas menu, show/hide based on off-canvas menu state.
-
-          Entering: "transition ease-in-out duration-300 transform"
-            From: "-translate-x-full"
-            To: "translate-x-0"
-          Leaving: "transition ease-in-out duration-300 transform"
-            From: "translate-x-0"
-            To: "-translate-x-full"
-        -->
-        <div class="relative flex w-full max-w-xs flex-col overflow-y-auto bg-white pb-12 shadow-xl translate-x-0">
-          <div class="flex px-4 pt-5 pb-2">
-            <button type="button" class="-m-2 inline-flex items-center justify-center rounded-md p-2 text-gray-400">
-              <span class="sr-only">Close menu</span>
-              <!-- Heroicon name: outline/x-mark -->
-              <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          <!-- Links -->
-          <div class="mt-2">
-            <div class="border-b border-gray-200">
-              <div class="-mb-px flex space-x-8 px-4" aria-orientation="horizontal" role="tablist">
-                <!-- Selected: "text-indigo-600 border-indigo-600", Not Selected: "text-gray-900 border-transparent" -->
-                <button id="tabs-1-tab-1" class="text-gray-900 border-transparent flex-1 whitespace-nowrap border-b-2 py-4 px-1 text-base font-medium" aria-controls="tabs-1-panel-1" role="tab" type="button">Women</button>
-
-                <!-- Selected: "text-indigo-600 border-indigo-600", Not Selected: "text-gray-900 border-transparent" -->
-                <button id="tabs-1-tab-2" class="text-gray-900 border-transparent flex-1 whitespace-nowrap border-b-2 py-4 px-1 text-base font-medium" aria-controls="tabs-1-panel-2" role="tab" type="button">Men</button>
-              </div>
-            </div>
-
-            <!-- 'Women' tab panel, show/hide based on tab state. -->
-            <div id="tabs-1-panel-1" class="space-y-12 px-4 pt-10 pb-6 opacity-0" aria-labelledby="tabs-1-tab-1" role="tabpanel" tabindex="0">
-              <div class="grid grid-cols-1 items-start gap-y-10 gap-x-6">
-                <div class="grid grid-cols-1 gap-y-10 gap-x-6">
-                  <div>
-                    <p id="mobile-featured-heading-0" class="font-medium text-gray-900">Featured</p>
-                    <ul role="list" aria-labelledby="mobile-featured-heading-0" class="mt-6 space-y-6">
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Sleep</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Swimwear</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Underwear</a>
-                      </li>
-                    </ul>
-                  </div>
-                  <div>
-                    <p id="mobile-categories-heading" class="font-medium text-gray-900">Categories</p>
-                    <ul role="list" aria-labelledby="mobile-categories-heading" class="mt-6 space-y-6">
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Basic Tees</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Artwork Tees</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Bottoms</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Underwear</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Accessories</a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="grid grid-cols-1 gap-y-10 gap-x-6">
-                  <div>
-                    <p id="mobile-collection-heading" class="font-medium text-gray-900">Collection</p>
-                    <ul role="list" aria-labelledby="mobile-collection-heading" class="mt-6 space-y-6">
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Everything</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Core</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">New Arrivals</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Sale</a>
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div>
-                    <p id="mobile-brand-heading" class="font-medium text-gray-900">Brands</p>
-                    <ul role="list" aria-labelledby="mobile-brand-heading" class="mt-6 space-y-6">
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Full Nelson</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">My Way</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Re-Arranged</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Counterfeit</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Significant Other</a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- 'Men' tab panel, show/hide based on tab state. -->
-            <div id="tabs-1-panel-2" class="space-y-12 px-4 pt-10 pb-6 opacity-0" aria-labelledby="tabs-1-tab-2" role="tabpanel" tabindex="0">
-              <div class="grid grid-cols-1 items-start gap-y-10 gap-x-6">
-                <div class="grid grid-cols-1 gap-y-10 gap-x-6">
-                  <div>
-                    <p id="mobile-featured-heading-1" class="font-medium text-gray-900">Featured</p>
-                    <ul role="list" aria-labelledby="mobile-featured-heading-1" class="mt-6 space-y-6">
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Casual</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Boxers</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Outdoor</a>
-                      </li>
-                    </ul>
-                  </div>
-                  <div>
-                    <p id="mobile-categories-heading" class="font-medium text-gray-900">Categories</p>
-                    <ul role="list" aria-labelledby="mobile-categories-heading" class="mt-6 space-y-6">
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Artwork Tees</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Pants</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Accessories</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Boxers</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Basic Tees</a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="grid grid-cols-1 gap-y-10 gap-x-6">
-                  <div>
-                    <p id="mobile-collection-heading" class="font-medium text-gray-900">Collection</p>
-                    <ul role="list" aria-labelledby="mobile-collection-heading" class="mt-6 space-y-6">
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Everything</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Core</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">New Arrivals</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Sale</a>
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div>
-                    <p id="mobile-brand-heading" class="font-medium text-gray-900">Brands</p>
-                    <ul role="list" aria-labelledby="mobile-brand-heading" class="mt-6 space-y-6">
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Significant Other</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">My Way</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Counterfeit</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Re-Arranged</a>
-                      </li>
-
-                      <li class="flex">
-                        <a href="#" class="text-gray-500">Full Nelson</a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="space-y-6 border-t border-gray-200 py-6 px-4">
-            <div class="flow-root">
-              <a href="#" class="-m-2 block p-2 font-medium text-gray-900">Company</a>
-            </div>
-
-            <div class="flow-root">
-              <a href="#" class="-m-2 block p-2 font-medium text-gray-900">Stores</a>
-            </div>
-          </div>
-
-          <div class="space-y-6 border-t border-gray-200 py-6 px-4">
-            <div class="flow-root">
-              <a href="#" class="-m-2 block p-2 font-medium text-gray-900">Create an account</a>
-            </div>
-            <div class="flow-root">
-              <a href="#" class="-m-2 block p-2 font-medium text-gray-900">Sign in</a>
-            </div>
-          </div>
-
-          <div class="space-y-6 border-t border-gray-200 py-6 px-4">
-            <!-- Currency selector -->
-            <form>
-              <div class="inline-block">
-                <label for="mobile-currency" class="sr-only">Currency</label>
-                <div class="group relative -ml-2 rounded-md border-transparent focus-within:ring-2 focus-within:ring-white">
-                  <select id="mobile-currency" name="currency" class="flex items-center rounded-md border-transparent bg-none py-0.5 pl-2 pr-5 text-sm font-medium text-gray-700 focus:border-transparent focus:outline-none focus:ring-0 group-hover:text-gray-800">
-                    <option>CAD</option>
-
-                    <option>USD</option>
-
-                    <option>AUD</option>
-
-                    <option>EUR</option>
-
-                    <option>GBP</option>
-                  </select>
-                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center">
-                    <!-- Heroicon name: mini/chevron-down -->
-                    <svg class="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
     </div>
 
     <header class="relative">
@@ -310,7 +60,7 @@ require_once 'header.php';
                 <label for="desktop-currency" class="sr-only">Currency</label>
                 <div class="group relative -ml-2 rounded-md border-transparent bg-gray-900 focus-within:ring-2 focus-within:ring-white">
                   <select id="desktop-currency" name="currency" class="flex items-center rounded-md border-transparent bg-gray-900 bg-none py-0.5 pl-2 pr-5 text-sm font-medium text-white focus:border-transparent focus:outline-none focus:ring-0 group-hover:text-gray-100">
-                    <option>CAD</option>
+                    
 
                     <option>USD</option>
 
@@ -349,22 +99,22 @@ require_once 'header.php';
                 <div class="hidden lg:flex lg:items-center">
                   <a href="#">
                     <span class="sr-only">Your Company</span>
-                    <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="">
+                    
                   </a>
                 </div>
 
                 <div class="hidden h-full lg:flex">
-                  <!-- Mega menus -->
+                  <!-- Mega PCus -->
                   <div class="ml-8">
                     <div class="flex h-full justify-center space-x-8">
                       <div class="flex">
                         <div class="relative flex">
                           <!-- Item active: "border-indigo-600 text-indigo-600", Item inactive: "border-transparent text-gray-700 hover:text-gray-800" -->
-                          <button type="button" class="border-transparent text-gray-700 hover:text-gray-800 relative z-10 -mb-px flex items-center border-b-2 pt-px text-sm font-medium transition-colors duration-200 ease-out" aria-expanded="false">Women</button>
+                          <button type="button" class="border-transparent text-gray-700 hover:text-gray-800 relative z-10 -mb-px flex items-center border-b-2 pt-px text-sm font-medium transition-colors duration-200 ease-out" aria-expanded="false" ><a href="index.php">Laptop</a></button>
                         </div>
 
                         <!--
-                          'Women' mega menu, show/hide based on flyout menu state.
+                          'Laptop' mega PCu, show/hide based on flyout PCu state.
 
                           Entering: "transition ease-out duration-200"
                             From: "opacity-0"
@@ -374,7 +124,7 @@ require_once 'header.php';
                             To: "opacity-0"
                         -->
                         <div class="absolute inset-x-0 top-full z-20 text-gray-500 sm:text-sm opacity-0">
-                          <!-- Presentational element used to render the bottom shadow, if we put the shadow on the actual panel it pokes out the top, so we use this shorter element to hide the top of the shadow -->
+                          <!-- Presentational elePCt used to render the bottom shadow, if we put the shadow on the actual panel it pokes out the top, so we use this shorter elePCt to hide the top of the shadow -->
                           <div class="absolute inset-0 top-1/2 bg-white shadow" aria-hidden="true"></div>
 
                           <div class="relative bg-white">
@@ -478,11 +228,11 @@ require_once 'header.php';
                       <div class="flex">
                         <div class="relative flex">
                           <!-- Item active: "border-indigo-600 text-indigo-600", Item inactive: "border-transparent text-gray-700 hover:text-gray-800" -->
-                          <button type="button" class="border-transparent text-gray-700 hover:text-gray-800 relative z-10 -mb-px flex items-center border-b-2 pt-px text-sm font-medium transition-colors duration-200 ease-out" aria-expanded="false">Men</button>
+                          <button type="button" class="border-transparent text-gray-700 hover:text-gray-800 relative z-10 -mb-px flex items-center border-b-2 pt-px text-sm font-medium transition-colors duration-200 ease-out" aria-expanded="false">PC</button>
                         </div>
 
                         <!--
-                          'Men' mega menu, show/hide based on flyout menu state.
+                          'PC' mega PCu, show/hide based on flyout PCu state.
 
                           Entering: "transition ease-out duration-200"
                             From: "opacity-0"
@@ -492,7 +242,7 @@ require_once 'header.php';
                             To: "opacity-0"
                         -->
                         <div class="absolute inset-x-0 top-full z-20 text-gray-500 sm:text-sm opacity-0">
-                          <!-- Presentational element used to render the bottom shadow, if we put the shadow on the actual panel it pokes out the top, so we use this shorter element to hide the top of the shadow -->
+                          <!-- Presentational elePCt used to render the bottom shadow, if we put the shadow on the actual panel it pokes out the top, so we use this shorter elePCt to hide the top of the shadow -->
                           <div class="absolute inset-0 top-1/2 bg-white shadow" aria-hidden="true"></div>
 
                           <div class="relative bg-white opacity-0">
@@ -600,11 +350,11 @@ require_once 'header.php';
                   </div>
                 </div>
 
-                <!-- Mobile menu and search (lg-) -->
+                <!-- Mobile PCu and search (lg-) -->
                 <div class="flex flex-1 items-center lg:hidden">
-                  <!-- Mobile menu toggle, controls the 'mobileMenuOpen' state. -->
+                  <!-- Mobile PCu toggle, controls the 'mobilePCuOpen' state. -->
                   <button type="button" class="-ml-2 rounded-md bg-white p-2 text-gray-400">
-                    <span class="sr-only">Open menu</span>
+                    <span class="sr-only">Open PCu</span>
                     <!-- Heroicon name: outline/bars-3 -->
                     <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
@@ -624,7 +374,7 @@ require_once 'header.php';
                 <!-- Logo (lg-) -->
                 <a href="#" class="lg:hidden">
                   <span class="sr-only">Your Company</span>
-                  <img src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="" class="h-8 w-auto">
+                  
                 </a>
 
                 <div class="flex flex-1 items-center justify-end">
@@ -681,7 +431,7 @@ require_once 'header.php';
     -->
     <div class="relative z-40 sm:hidden" role="dialog" aria-modal="true">
       <!--
-        Off-canvas menu backdrop, show/hide based on off-canvas menu state.
+        Off-canvas PCu backdrop, show/hide based on off-canvas PCu state.
 
         Entering: "transition-opacity ease-linear duration-300"
           From: "opacity-0"
@@ -690,202 +440,15 @@ require_once 'header.php';
           From: "opacity-100"
           To: "opacity-0"
       -->
-      <div class="fixed inset-0 bg-black bg-opacity-25"></div>
+      
 
-      <div class="fixed inset-0 z-40 flex">
-        <!--
-          Off-canvas menu, show/hide based on off-canvas menu state.
-
-          Entering: "transition ease-in-out duration-300 transform"
-            From: "translate-x-full"
-            To: "translate-x-0"
-          Leaving: "transition ease-in-out duration-300 transform"
-            From: "translate-x-0"
-            To: "translate-x-full"
-        -->
-        <div class="relative ml-auto flex h-full w-full max-w-xs flex-col overflow-y-auto bg-white py-4 pb-12 shadow-xl">
-          <div class="flex items-center justify-between px-4">
-            <h2 class="text-lg font-medium text-gray-900">Filters</h2>
-            <button type="button" class="-mr-2 flex h-10 w-10 items-center justify-center rounded-md bg-white p-2 text-gray-400">
-              <span class="sr-only">Close menu</span>
-              <!-- Heroicon name: outline/x-mark -->
-              <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          <!-- Filters -->
-          <form class="mt-4">
-            <div class="border-t border-gray-200 px-4 py-6">
-              <h3 class="-mx-2 -my-3 flow-root">
-                <!-- Expand/collapse section button -->
-                <button type="button" class="flex w-full items-center justify-between bg-white px-2 py-3 text-sm text-gray-400" aria-controls="filter-section-0" aria-expanded="false">
-                  <span class="font-medium text-gray-900">Category</span>
-                  <span class="ml-6 flex items-center">
-                    <!--
-                      Expand/collapse icon, toggle classes based on section open state.
-
-                      Heroicon name: mini/chevron-down
-
-                      Open: "-rotate-180", Closed: "rotate-0"
-                    -->
-                    <svg class="rotate-0 h-5 w-5 transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-                    </svg>
-                  </span>
-                </button>
-              </h3>
-              <!-- Filter section, show/hide based on section state. -->
-              <div class="pt-6" id="filter-section-0">
-                <div class="space-y-6">
-                  <div class="flex items-center">
-                    <input id="filter-mobile-category-0" name="category[]" value="new-arrivals" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                    <label for="filter-mobile-category-0" class="ml-3 text-sm text-gray-500">All New Arrivals</label>
-                  </div>
-
-                  <div class="flex items-center">
-                    <input id="filter-mobile-category-1" name="category[]" value="tees" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                    <label for="filter-mobile-category-1" class="ml-3 text-sm text-gray-500">Tees</label>
-                  </div>
-
-                  <div class="flex items-center">
-                    <input id="filter-mobile-category-2" name="category[]" value="objects" type="checkbox" checked class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                    <label for="filter-mobile-category-2" class="ml-3 text-sm text-gray-500">Objects</label>
-                  </div>
-
-                  <div class="flex items-center">
-                    <input id="filter-mobile-category-3" name="category[]" value="sweatshirts" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                    <label for="filter-mobile-category-3" class="ml-3 text-sm text-gray-500">Sweatshirts</label>
-                  </div>
-
-                  <div class="flex items-center">
-                    <input id="filter-mobile-category-4" name="category[]" value="pants-shorts" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                    <label for="filter-mobile-category-4" class="ml-3 text-sm text-gray-500">Pants &amp; Shorts</label>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="border-t border-gray-200 px-4 py-6">
-              <h3 class="-mx-2 -my-3 flow-root">
-                <!-- Expand/collapse section button -->
-                <button type="button" class="flex w-full items-center justify-between bg-white px-2 py-3 text-sm text-gray-400" aria-controls="filter-section-1" aria-expanded="false">
-                  <span class="font-medium text-gray-900">Color</span>
-                  <span class="ml-6 flex items-center">
-                    <!--
-                      Expand/collapse icon, toggle classes based on section open state.
-
-                      Heroicon name: mini/chevron-down
-
-                      Open: "-rotate-180", Closed: "rotate-0"
-                    -->
-                    <svg class="rotate-0 h-5 w-5 transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-                    </svg>
-                  </span>
-                </button>
-              </h3>
-              <!-- Filter section, show/hide based on section state. -->
-              <div class="pt-6" id="filter-section-1">
-                <div class="space-y-6">
-                  <div class="flex items-center">
-                    <input id="filter-mobile-color-0" name="color[]" value="white" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                    <label for="filter-mobile-color-0" class="ml-3 text-sm text-gray-500">White</label>
-                  </div>
-
-                  <div class="flex items-center">
-                    <input id="filter-mobile-color-1" name="color[]" value="beige" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                    <label for="filter-mobile-color-1" class="ml-3 text-sm text-gray-500">Beige</label>
-                  </div>
-
-                  <div class="flex items-center">
-                    <input id="filter-mobile-color-2" name="color[]" value="blue" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                    <label for="filter-mobile-color-2" class="ml-3 text-sm text-gray-500">Blue</label>
-                  </div>
-
-                  <div class="flex items-center">
-                    <input id="filter-mobile-color-3" name="color[]" value="brown" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                    <label for="filter-mobile-color-3" class="ml-3 text-sm text-gray-500">Brown</label>
-                  </div>
-
-                  <div class="flex items-center">
-                    <input id="filter-mobile-color-4" name="color[]" value="green" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                    <label for="filter-mobile-color-4" class="ml-3 text-sm text-gray-500">Green</label>
-                  </div>
-
-                  <div class="flex items-center">
-                    <input id="filter-mobile-color-5" name="color[]" value="purple" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                    <label for="filter-mobile-color-5" class="ml-3 text-sm text-gray-500">Purple</label>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="border-t border-gray-200 px-4 py-6">
-              <h3 class="-mx-2 -my-3 flow-root">
-                <!-- Expand/collapse section button -->
-                <button type="button" class="flex w-full items-center justify-between bg-white px-2 py-3 text-sm text-gray-400" aria-controls="filter-section-2" aria-expanded="false">
-                  <span class="font-medium text-gray-900">Sizes</span>
-                  <span class="ml-6 flex items-center">
-                    <!--
-                      Expand/collapse icon, toggle classes based on section open state.
-
-                      Heroicon name: mini/chevron-down
-
-                      Open: "-rotate-180", Closed: "rotate-0"
-                    -->
-                    <svg class="rotate-0 h-5 w-5 transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-                    </svg>
-                  </span>
-                </button>
-              </h3>
-              <!-- Filter section, show/hide based on section state. -->
-              <div class="pt-6" id="filter-section-2">
-                <div class="space-y-6">
-                  <div class="flex items-center">
-                    <input id="filter-mobile-sizes-0" name="sizes[]" value="xs" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                    <label for="filter-mobile-sizes-0" class="ml-3 text-sm text-gray-500">XS</label>
-                  </div>
-
-                  <div class="flex items-center">
-                    <input id="filter-mobile-sizes-1" name="sizes[]" value="s" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                    <label for="filter-mobile-sizes-1" class="ml-3 text-sm text-gray-500">S</label>
-                  </div>
-
-                  <div class="flex items-center">
-                    <input id="filter-mobile-sizes-2" name="sizes[]" value="m" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                    <label for="filter-mobile-sizes-2" class="ml-3 text-sm text-gray-500">M</label>
-                  </div>
-
-                  <div class="flex items-center">
-                    <input id="filter-mobile-sizes-3" name="sizes[]" value="l" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                    <label for="filter-mobile-sizes-3" class="ml-3 text-sm text-gray-500">L</label>
-                  </div>
-
-                  <div class="flex items-center">
-                    <input id="filter-mobile-sizes-4" name="sizes[]" value="xl" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                    <label for="filter-mobile-sizes-4" class="ml-3 text-sm text-gray-500">XL</label>
-                  </div>
-
-                  <div class="flex items-center">
-                    <input id="filter-mobile-sizes-5" name="sizes[]" value="2xl" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                    <label for="filter-mobile-sizes-5" class="ml-3 text-sm text-gray-500">2XL</label>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
     </div>
 
     <main>
       <div class="bg-white">
         <div class="mx-auto max-w-7xl py-16 px-4 sm:px-6 lg:px-8">
-          <h1 class="text-3xl font-bold tracking-tight text-gray-900">Workspace sale</h1>
-          <p class="mt-4 max-w-xl text-sm text-gray-700">Our thoughtfully designed workspace objects are crafted in limited runs. Improve your productivity and organization with these sale items before we run out.</p>
+          <h1 class="text-3xl font-bold tracking-tight text-gray-900">Find Your Perfect Laptop Match</h1>
+          <p class="mt-4 max-w-xl text-sm text-gray-700">Welcome to our Laptop Extravaganza! Prepare yourself for an incredible shopping experience where you'll find the best deals on cutting-edge laptops. Whether you're a student, professional, gamer, or simply someone who loves the convenience of portable computing, we've got you covered.</p>
         </div>
       </div>
 
@@ -897,7 +460,7 @@ require_once 'header.php';
           <div class="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
             <div class="relative inline-block text-left">
               <div>
-                <button type="button" class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900" id="menu-button" aria-expanded="false" aria-haspopup="true">
+                <button type="button" class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900" id="PCu-button" aria-expanded="false" aria-haspopup="true">
                   Sort
                   <!-- Heroicon name: mini/chevron-down -->
                   <svg class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -907,7 +470,7 @@ require_once 'header.php';
               </div>
 
               <!--
-                Dropdown menu, show/hide based on menu state.
+                Dropdown PCu, show/hide based on PCu state.
 
                 Entering: "transition ease-out duration-100"
                   From: "transform opacity-0 scale-95"
@@ -916,22 +479,22 @@ require_once 'header.php';
                   From: "transform opacity-100 scale-100"
                   To: "transform opacity-0 scale-95"
               -->
-              <div class="absolute left-0 z-10 mt-2 w-40 origin-top-left rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none transform opacity-0 scale-95" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+              <div class="absolute left-0 z-10 mt-2 w-40 origin-top-left rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none transform opacity-0 scale-95" role="PCu" aria-orientation="vertical" aria-labelledby="PCu-button" tabindex="-1">
                 <div class="py-1" role="none">
                   <!--
                     Active: "bg-gray-100", Not Active: ""
 
                     Selected: "font-medium text-gray-900", Not Selected: "text-gray-500"
                   -->
-                  <a href="#" class="font-medium text-gray-900 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">Most Popular</a>
+                  <a href="#" class="font-medium text-gray-900 block px-4 py-2 text-sm" role="PCuitem" tabindex="-1" id="PCu-item-0">Most Popular</a>
 
-                  <a href="#" class="text-gray-500 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-1">Best Rating</a>
+                  <a href="#" class="text-gray-500 block px-4 py-2 text-sm" role="PCuitem" tabindex="-1" id="PCu-item-1">Best Rating</a>
 
-                  <a href="#" class="text-gray-500 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-2">Newest</a>
+                  <a href="#" class="text-gray-500 block px-4 py-2 text-sm" role="PCuitem" tabindex="-1" id="PCu-item-2">Newest</a>
 
-                  <a href="#" class="text-gray-500 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-3">Price: Low to High</a>
+                  <a href="#" class="text-gray-500 block px-4 py-2 text-sm" role="PCuitem" tabindex="-1" id="PCu-item-3">Price: Low to High</a>
 
-                  <a href="#" class="text-gray-500 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-4">Price: High to Low</a>
+                  <a href="#" class="text-gray-500 block px-4 py-2 text-sm" role="PCuitem" tabindex="-1" id="PCu-item-4">Price: High to Low</a>
                 </div>
               </div>
             </div>
@@ -953,44 +516,7 @@ require_once 'header.php';
                       </svg>
                     </button>
 
-                    <!--
-                      'Category' dropdown, show/hide based on dropdown state.
-
-                      Entering: "transition ease-out duration-100"
-                        From: "transform opacity-0 scale-95"
-                        To: "transform opacity-100 scale-100"
-                      Leaving: "transition ease-in duration-75"
-                        From: "transform opacity-100 scale-100"
-                        To: "transform opacity-0 scale-95"
-                    -->
-                    <div class="absolute right-0 z-10 mt-2 origin-top-right rounded-md bg-white p-4 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none transform opacity-0 scale-95">
-                      <form class="space-y-4">
-                        <div class="flex items-center">
-                          <input id="filter-category-0" name="category[]" value="new-arrivals" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                          <label for="filter-category-0" class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">All New Arrivals</label>
-                        </div>
-
-                        <div class="flex items-center">
-                          <input id="filter-category-1" name="category[]" value="tees" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                          <label for="filter-category-1" class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">Tees</label>
-                        </div>
-
-                        <div class="flex items-center">
-                          <input id="filter-category-2" name="category[]" value="objects" type="checkbox" checked class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                          <label for="filter-category-2" class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">Objects</label>
-                        </div>
-
-                        <div class="flex items-center">
-                          <input id="filter-category-3" name="category[]" value="sweatshirts" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                          <label for="filter-category-3" class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">Sweatshirts</label>
-                        </div>
-
-                        <div class="flex items-center">
-                          <input id="filter-category-4" name="category[]" value="pants-shorts" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                          <label for="filter-category-4" class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">Pants &amp; Shorts</label>
-                        </div>
-                      </form>
-                    </div>
+                   
                   </div>
 
                   <div class="relative inline-block px-4 text-left">
@@ -1002,49 +528,7 @@ require_once 'header.php';
                       </svg>
                     </button>
 
-                    <!--
-                      'Color' dropdown, show/hide based on dropdown state.
 
-                      Entering: "transition ease-out duration-100"
-                        From: "transform opacity-0 scale-95"
-                        To: "transform opacity-100 scale-100"
-                      Leaving: "transition ease-in duration-75"
-                        From: "transform opacity-100 scale-100"
-                        To: "transform opacity-0 scale-95"
-                    -->
-                    <div class="absolute right-0 z-10 mt-2 origin-top-right rounded-md bg-white p-4 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none transform opacity-0 scale-95">
-                      <form class="space-y-4">
-                        <div class="flex items-center">
-                          <input id="filter-color-0" name="color[]" value="white" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                          <label for="filter-color-0" class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">White</label>
-                        </div>
-
-                        <div class="flex items-center">
-                          <input id="filter-color-1" name="color[]" value="beige" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                          <label for="filter-color-1" class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">Beige</label>
-                        </div>
-
-                        <div class="flex items-center">
-                          <input id="filter-color-2" name="color[]" value="blue" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                          <label for="filter-color-2" class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">Blue</label>
-                        </div>
-
-                        <div class="flex items-center">
-                          <input id="filter-color-3" name="color[]" value="brown" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                          <label for="filter-color-3" class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">Brown</label>
-                        </div>
-
-                        <div class="flex items-center">
-                          <input id="filter-color-4" name="color[]" value="green" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                          <label for="filter-color-4" class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">Green</label>
-                        </div>
-
-                        <div class="flex items-center">
-                          <input id="filter-color-5" name="color[]" value="purple" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                          <label for="filter-color-5" class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">Purple</label>
-                        </div>
-                      </form>
-                    </div>
                   </div>
 
                   <div class="relative inline-block px-4 text-left">
@@ -1056,48 +540,7 @@ require_once 'header.php';
                       </svg>
                     </button>
 
-                    <!--
-                      'Sizes' dropdown, show/hide based on dropdown state.
-
-                      Entering: "transition ease-out duration-100"
-                        From: "transform opacity-0 scale-95"
-                        To: "transform opacity-100 scale-100"
-                      Leaving: "transition ease-in duration-75"
-                        From: "transform opacity-100 scale-100"
-                        To: "transform opacity-0 scale-95"
-                    -->
-                    <div class="absolute right-0 z-10 mt-2 origin-top-right rounded-md bg-white p-4 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none transform opacity-0 scale-95">
-                      <form class="space-y-4">
-                        <div class="flex items-center">
-                          <input id="filter-sizes-0" name="sizes[]" value="xs" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                          <label for="filter-sizes-0" class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">XS</label>
-                        </div>
-
-                        <div class="flex items-center">
-                          <input id="filter-sizes-1" name="sizes[]" value="s" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                          <label for="filter-sizes-1" class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">S</label>
-                        </div>
-
-                        <div class="flex items-center">
-                          <input id="filter-sizes-2" name="sizes[]" value="m" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                          <label for="filter-sizes-2" class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">M</label>
-                        </div>
-
-                        <div class="flex items-center">
-                          <input id="filter-sizes-3" name="sizes[]" value="l" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                          <label for="filter-sizes-3" class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">L</label>
-                        </div>
-
-                        <div class="flex items-center">
-                          <input id="filter-sizes-4" name="sizes[]" value="xl" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                          <label for="filter-sizes-4" class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">XL</label>
-                        </div>
-
-                        <div class="flex items-center">
-                          <input id="filter-sizes-5" name="sizes[]" value="2xl" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                          <label for="filter-sizes-5" class="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">2XL</label>
-                        </div>
-                      </form>
+                    
                     </div>
                   </div>
                 </div>
@@ -1116,10 +559,15 @@ require_once 'header.php';
 
             <div aria-hidden="true" class="hidden h-5 w-px bg-gray-100 sm:ml-4 sm:block"></div>
 
-            <div class="mt-2 sm:mt-0 sm:ml-4">
-              <div class="-m-1 flex flex-wrap items-center">
+            <div class="mt-2 sm:mt-0 sm:ml-4 flex">
+              <?php
+
+              if (isset($_GET['keywords'])) {
+                foreach ($_GET['keywords'] as $thiskeyword) {
+                  ?>
+                  <div class="-m-1 flex flex-wrap items-center">
                 <span class="m-1 inline-flex items-center rounded-full border border-gray-200 bg-white py-1.5 pl-3 pr-2 text-sm font-medium text-gray-900">
-                  <span>Objects</span>
+                  <span><?php echo $thiskeyword ?></span>
                   <button type="button" class="ml-1 inline-flex h-4 w-4 flex-shrink-0 rounded-full p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-500">
                     <span class="sr-only">Remove filter for Objects</span>
                     <svg class="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
@@ -1128,6 +576,14 @@ require_once 'header.php';
                   </button>
                 </span>
               </div>
+
+              <?php
+                }
+              }
+
+              ?>
+              
+
             </div>
           </div>
         </div>
@@ -1140,8 +596,7 @@ require_once 'header.php';
         <div class="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
 
           <?php
-          // SQL query to select data
-          $sql = "SELECT DISTINCT name,img, price FROM product;";
+          
 
           // Execute the query
           $result = $conn->query($sql);
@@ -1188,7 +643,7 @@ require_once 'header.php';
           <div class="grid grid-cols-1 md:grid-flow-col md:auto-rows-min md:grid-cols-12 md:gap-x-8 md:gap-y-16">
             <!-- Image section -->
             <div class="col-span-1 md:col-span-2 lg:col-start-1 lg:row-start-1">
-              <img src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="" class="h-8 w-auto">
+             
             </div>
 
             <!-- Sitemap sections -->
@@ -1267,7 +722,7 @@ require_once 'header.php';
                   </li>
 
                   <li class="text-sm">
-                    <a href="#" class="text-gray-500 hover:text-gray-600">Secure Payments</a>
+                    <a href="#" class="text-gray-500 hover:text-gray-600">Secure PayPCts</a>
                   </li>
 
                   <li class="text-sm">
@@ -1314,7 +769,7 @@ require_once 'header.php';
 
     <!-- Component Start -->
 
-  <div class="flex flex-col flex-grow w-full max-w-xl bg-white shadow-xl rounded-lg overflow-hidden fixed bottom-0 right-0 m-2  border-2 hidden transition ease-out duration-100 transform opacity-0 scale-95" id="chatMain">
+  <div class="flex flex-col flex-grow w-full max-w-xl bg-white shadow-xl rounded-lg overflow-hidden fixed bottom-0 right-0 lg:m-2  border-2 hidden transition ease-out duration-100 transform opacity-0 scale-95 z-50 " id="chatMain">
     <div class="bg-gray-100 p-4 flex justify-between">
       <!-- <input class="flex items-center h-10 w-full rounded px-3 text-sm" type="text" placeholder="Type your message…"> -->
       <p class="text-sm font-medium ">AI Powered Live Chat <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-700/10">Online</span></p>
