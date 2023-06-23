@@ -616,7 +616,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['keywords'])) {
               <img src="img/<?php echo $img ?>" alt="Olive drab green insulated bottle with flared screw lid and flat top." class="h-full w-full object-cover object-center group-hover:opacity-75">
             </div>
             <h3 class="mt-4 text-sm text-gray-700"><?php echo $name ?></h3>
-            <p class="mt-1 text-lg font-medium text-gray-900">$<?php echo $price ?></p>
+            <p class="mt-1 text-lg font-medium text-gray-900">LKR <?php echo $price ?></p>
           </a>
 
 
