@@ -56,7 +56,7 @@ window.onload = function() {
     })
     .then(response => {
       if (response.ok) {
-        console.log('Audio file saved successfully.');
+        console.log(response);
       } else {
         console.error('Error uploading audio file.');
       }

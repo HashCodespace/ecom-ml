@@ -1,4 +1,6 @@
 <?php
+
+
 require_once 'conn.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (isset($_FILES['audio']) && $_FILES['audio']['error'] === UPLOAD_ERR_OK) {
@@ -21,49 +23,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           echo "Data inserted successfully.";
 
           // API endpoint
-          $url = 'http://localhost/flask-endpoint';
-          $data = json_encode(array(
-            "audio" => array("http://localhost/ecom-ml/".$destPath )
+          $url = 'http://127.0.0.1:5000/filter_categories';
+
+          $audioPath = "http://localhost/ecom-ml/".$destPath;
+          $encodedAudioPath = urlencode($audioPath);
+
+          $endpointURL = $url."?audio=".$encodedAudioPath;
+
+          $curl = curl_init();
+
+          curl_setopt_array($curl, array(
+            CURLOPT_URL => $endpointURL ,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
           ));
 
-          // Initialize cURL
-          $ch = curl_init($url);
+          $response = curl_exec($curl);
 
-          // Set the request method to POST
-          curl_setopt($ch, CURLOPT_POST, 1);
+          curl_close($curl);
+          $res=  $response;
 
-          // Set the POST data
-          curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-
-          // Include the response headers in the output
-          curl_setopt($ch, CURLOPT_HEADER, true);
-
-          // Return the response instead of printing it
-          curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-          // Execute the request
-          $response = curl_exec($ch);
-
-          // Close cURL resource
-          curl_close($ch);
-
-          // Output the response
-          echo $response;
 
 
 
 
       } else {
-          echo "Error: " . $sql . "<br>" . $conn->error;
+          $res= "Error: " . $sql . "<br>" . $conn->error;
       }
 
-      echo 'Audio file saved successfully.';
+      $res= 'Audio file saved successfully.';
     } else {
-      echo 'Error moving audio file to destination. Please check directory permissions.';
+      $res= 'Error moving audio file to destination. Please check directory permissions.';
     }
   } else {
-    echo 'Error uploading audio file: ' . $_FILES['audio']['error'];
+    $res= 'Error uploading audio file: ' . $_FILES['audio']['error'];
   }
+
+    $response = array('success' => false, 'message' =>$res);
+    echo json_encode($response);
 }
 
 
